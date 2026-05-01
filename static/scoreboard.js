@@ -125,7 +125,7 @@ function render() {
   }
   const title = state.data.snapshot.title || "";
   elements.pageTitle.textContent = title ? `Bảng điểm ${title}` : "Bảng điểm";
-  document.title = elements.pageTitle.textContent + " - Themis Scoreboard";
+  document.title = elements.pageTitle.textContent + " - CHTCoder";
   elements.snapshotMeta.textContent = `cập nhật ${state.data.snapshot.created_at}`;
   elements.emptyState.hidden = true;
   elements.content.hidden = false;
