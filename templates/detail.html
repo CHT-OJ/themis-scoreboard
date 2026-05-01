@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}{{ detail.code }} - Themis Scoreboard{% endblock %}
+
+{% block content %}
+<section class="detail-shell">
+  <div class="page-header detail-header">
+    <div>
+      <a class="back-link" href="{{ url_for('index') }}">← Quay lại bảng điểm</a>
+      <p class="eyebrow">Contestant Detail</p>
+      <h1>{{ detail.code }}</h1>
+      <p class="page-subtitle">
+        {% if snapshot %}{{ snapshot.title }} · {% endif %}{{ detail.room }}
+      </p>
+    </div>
+  </div>
+
+  <div class="detail-summary">
+    <article class="stat-card">
+      <span>Rank</span>
+      <strong>#{{ detail.rank }}</strong>
+      <small>Vị trí hiện tại trên bảng điểm.</small>
+    </article>
+    <article class="stat-card">
+      <span>Tổng điểm</span>
+      <strong>{{ detail.total_score }}</strong>
+      <small>Điểm cộng từ tất cả bài thi.</small>
+    </article>
+    <article class="stat-card">
+      <span>Top 35</span>
+      <strong>{{ "Có" if detail.is_top_35 else "Không" }}</strong>
+      <small>Tự động xác định theo snapshot đang công bố.</small>
+    </article>
+  </div>
+
+  <div class="problem-grid">
+    {% for problem in detail.problems %}
+      <details class="surface-card problem-card" id="problem-{{ problem.problem_code }}">
+        <summary class="problem-card-head" style="cursor: pointer; list-style: none;">
+          <div>
+            <p class="eyebrow">Problem</p>
+            <h2>{{ problem.problem_code }}</h2>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="score-chip">{{ problem.score }} điểm</div>
+            <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s;"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </summary>
+        <div class="table-wrap">
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th>Test</th>
+                <th class="numeric">Điểm</th>
+                <th>Verdict</th>
+                <th class="numeric">ms</th>
+                <th>Ghi chú</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if problem.tests %}
+                {% for test in problem.tests %}
+                  {% set icons = {
+                    'AC': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+                    'WA': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+                    'RTE': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+                    'CE': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+                    'TLE': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="2" x2="14" y2="2"/><line x1="12" y1="14" x2="15" y2="11"/><circle cx="12" cy="14" r="8"/></svg>',
+                    'Partial': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.1 2.182a10 10 0 0 1 3.8 0"/><path d="M16.404 4.304a10 10 0 0 1 2.923 2.502"/><path d="M21.5 10.1a10 10 0 0 1 0 3.8"/><path d="M19.327 16.404a10 10 0 0 1-2.502 2.923"/><path d="M13.9 21.5a10 10 0 0 1-3.8 0"/><path d="M7.596 19.327a10 10 0 0 1-2.923-2.502"/><path d="M2.5 13.9a10 10 0 0 1 0-3.8"/><path d="M4.673 7.596a10 10 0 0 1 2.502-2.923"/></svg>',
+                    'Compile': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
+                    'Unknown': '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+                  } %}
+                  <tr>
+                    <td>{{ test.test_name }}</td>
+                    <td class="numeric">{{ test.score }}</td>
+                    <td><span class="badge badge-{{ test.verdict }}">{{ icons.get(test.verdict, '') | safe }} {{ test.verdict }}</span></td>
+                    <td class="numeric">{{ test.runtime_ms or "" }}</td>
+                    <td class="note-cell">{{ test.note or "" }}</td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="5">Không có dữ liệu test case.</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const hash = window.location.hash;
+    const details = document.querySelectorAll("details.problem-card");
+    if (hash && hash.startsWith("#problem-")) {
+      const target = document.querySelector(hash);
+      if (target) {
+        target.open = true;
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    } else if (details.length > 0) {
+      // By default open only the first one
+      details[0].open = true;
+    }
+  });
+</script>
+<style>
+  details.problem-card > summary::-webkit-details-marker {
+    display: none;
+  }
+  details.problem-card[open] summary .chevron {
+    transform: rotate(180deg);
+  }
+</style>
+{% endblock %}

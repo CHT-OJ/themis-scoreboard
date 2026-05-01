@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Themis Scoreboard{% endblock %}
+
+{% block content %}
+<section class="admin-shell">
+  <div class="admin-hero">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Publish Contest</p>
+        <h1>Admin Upload</h1>
+      </div>
+      <p class="hero-text admin-text">Chọn file Excel Themis, hệ thống sẽ tự phân tích, tính snapshot mới và cập nhật bảng điểm công khai.</p>
+    </div>
+
+    <div class="admin-meta">
+      <div class="hero-note">
+        <strong>1 file là đủ</strong>
+        <span>Với `KQUA.xlsx`, hệ thống sẽ tự nhận diện sheet tổng hợp và sheet chi tiết.</span>
+      </div>
+      <div class="hero-note">
+        <strong>Nhiều file vẫn được</strong>
+        <span>Nếu có nhiều phòng thi, bạn có thể chọn nhiều file cùng lúc và hệ thống sẽ ghép thành một kỳ thi.</span>
+      </div>
+    </div>
+  </div>
+
+  {% if not is_admin %}
+    <form class="panel auth-panel" method="post" action="{{ url_for('admin') }}">
+      <label>
+        Mật khẩu admin
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <button type="submit">Đăng nhập</button>
+    </form>
+  {% else %}
+    <div class="admin-layout">
+      <form class="panel upload-panel" method="post" action="{{ url_for('admin_upload') }}" enctype="multipart/form-data">
+        <label>
+          Tên kỳ thi
+          <input type="text" name="title" value="Final Contest">
+        </label>
+        <label class="file-drop">
+          <span class="drop-title">File Excel kết quả</span>
+          <span class="drop-copy">Chọn một hoặc nhiều file `.xlsx` / `.xls` để publish scoreboard.</span>
+          <input type="file" name="files" accept=".xlsx,.xls" multiple required>
+        </label>
+        <button type="submit">Parse và công bố scoreboard</button>
+      </form>
+
+      <aside class="panel help-panel">
+        <p class="eyebrow">Checklist</p>
+        <h2>Trước khi publish</h2>
+        <ul class="mini-list">
+          <li>File cần có 2 sheet: `Tổng hợp điểm` và `Chi tiết chấm`.</li>
+          <li>Mỗi lần upload sẽ tạo snapshot mới và thay bảng điểm đang hiển thị.</li>
+          <li>Nếu parse lỗi, snapshot cũ vẫn được giữ nguyên.</li>
+        </ul>
+        <form method="post" action="{{ url_for('admin_logout') }}">
+          <button class="secondary-button" type="submit">Đăng xuất</button>
+        </form>
+      </aside>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
