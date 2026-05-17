@@ -188,6 +188,12 @@ h2 {
   align-items: center;
 }
 
+.reveal-toolbar .action-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .search-field-wrapper {
   flex: 1 1 200px;
   min-width: 0;
@@ -408,6 +414,75 @@ tbody tr.top-rank td:first-child::before {
   bottom: 0;
   width: 3px;
   background-color: var(--primary);
+}
+
+.locked-row td {
+  color: var(--muted-foreground);
+}
+
+.locked-row {
+  cursor: pointer;
+}
+
+.locked-row:hover .masked-text {
+  filter: blur(1.8px);
+}
+
+.masked-text {
+  display: inline-block;
+  filter: blur(2.5px);
+  user-select: none;
+  letter-spacing: 0.03em;
+  transition: filter 0.2s ease;
+}
+
+.lock-chip {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  animation: lock-chip-pulse 1.4s ease-in-out infinite;
+}
+
+.reveal-row-enter td {
+  animation: reveal-row-cell-in 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes lock-chip-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes reveal-row-cell-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+    background-color: hsl(48 100% 62% / 0.92);
+    box-shadow: inset 0 0 0 999px hsl(48 100% 62% / 0.72), 0 0 0 1px hsl(45 95% 52% / 0.8);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(0);
+    background-color: hsl(48 100% 62% / 0.78);
+    box-shadow: inset 0 0 0 999px hsl(48 100% 62% / 0.55), 0 0 10px hsl(48 100% 50% / 0.45);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    background-color: transparent;
+    box-shadow: none;
+  }
 }
 
 .rank-pill {
@@ -652,5 +727,20 @@ tbody tr.top-rank td:first-child::before {
 
   .toolbar button {
     width: 100%;
+  }
+
+  .reveal-toolbar .action-group {
+    width: 100%;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-row-enter td {
+    animation: none;
+  }
+
+  .lock-chip {
+    animation: none;
   }
 }

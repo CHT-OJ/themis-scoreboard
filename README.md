@@ -14,6 +14,7 @@ python app.py
 Mo `http://127.0.0.1:5000`.
 
 Trang admin: `http://127.0.0.1:5000/admin`
+Trang reveal top 10: `http://127.0.0.1:5000/scoreboard/reveal-top10`
 
 Mat khau mac dinh trong `.env.example`: `admin123`
 

@@ -34,6 +34,12 @@ def create_app() -> Flask:
             scoreboard = fetch_scoreboard(conn)
         return render_template("scoreboard.html", initial_scoreboard=scoreboard)
 
+    @app.get("/scoreboard/reveal-top10")
+    def reveal_top10_page():
+        with connect_db() as conn:
+            scoreboard = fetch_scoreboard(conn)
+        return render_template("reveal_top10.html", initial_scoreboard=scoreboard)
+
     @app.get("/contestants/<int:contestant_id>")
     def contestant_page(contestant_id: int):
         with connect_db() as conn:
